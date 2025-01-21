@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Inventory</h2>
+<form method="POST">
+    <input type="text" name="name" placeholder="Item Name" required>
+    <input type="number" name="quantity" placeholder="Quantity" required>
+    <input type="text" name="description" placeholder="Description">
+    <button type="submit">Add Item</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr id="item-{{ item.id }}">
+            <td>{{ item.name }}</td>
+            <td>
+                <input type="number" class="edit-quantity" value="{{ item.quantity }}" data-item-id="{{ item.id }}">
+            </td>
+            <td>{{ item.description }}</td>
+            <td>
+                <a href="{{ url_for('delete_item', item_id=item.id) }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('log_page') }}">View Activity Log</a>
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+
+<script>
+    // Display flash messages as alerts
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                alert(message);
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    // Handle quantity update via AJAX
+    document.querySelectorAll('.edit-quantity').forEach(function(input) {
+        input.addEventListener('change', function() {
+            let itemId = this.getAttribute('data-item-id');
+            let newQuantity = this.value;
+            fetch('/edit_quantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'item_id=' + itemId + '&quantity=' + newQuantity
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message));
+        });
+    });
+</script>
+{% endblock %}

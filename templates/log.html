@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Activity Log</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Item</th>
+            <th>Source (Old Quantity)</th>
+            <th>Target (New Quantity)</th>
+            <th>Delta (Change)</th>
+            <th>Date/Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.action }}</td>
+            <td>{{ log.item_name }}</td>
+            <td>{{ log.source if log.source is not none else 'N/A' }}</td>
+            <td>{{ log.target if log.target is not none else 'N/A' }}</td>
+            <td>{{ log.delta if log.delta is not none else 'N/A' }}</td>
+            <td>{{ log.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+{% endblock %}
